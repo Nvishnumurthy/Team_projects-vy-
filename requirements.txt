@@ -1,0 +1,20 @@
+# Core
+pandas
+numpy
+scikit-learn
+lightgbm
+joblib
+
+# Drain3 (log template miner)
+# If pip install drain3 fails, instead run:
+#   pip install git+https://github.com/IntelLabs/drain3.git
+drain3
+
+# Deep learning
+torch
+
+# API
+fastapi
+uvicorn
+python-multipart
+aiofiles

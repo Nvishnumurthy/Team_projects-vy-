@@ -1,0 +1,45 @@
+Task:
+   ---->a service which takes reboot log in json format as input
+   ---->stores its details 
+   ---->then call method in which based on the timestamp ,nodeid write a query which retrieves event logs 10 mins before reboot (using reboot log timestamp)
+   ----->return those records
+   
+----->filter those records based on "registered","node down" and "66 C, 112.80 F" format temperature value
+    	and retur nthem as response  
+    	
+Task:
+    ----> now try to retrieve the previous uptime based on ipAddress given in input
+
+Task:
+   ----->retrieve snr,latency data which is around or the at teh same time of reboot 
+   --->check their value whether they are below the average or above 
+   --->then return snr,latency values along with a msg saying they are lower than average or not
+ 
+ 
+   
+   
+sql command to retrieve logs 10 mins beofre reboot:
+                  SELECT eventtime, eventuei, eventlogmsg FROM events WHERE eventtime BETWEEN ('2025-10-06 19:28:18'::timestamp - INTERVAL '10 minutes') AND '2025-10-06 19:28:18'::timestamp
+						AND nodeid = 246;
+
+sql command to retrieve rebbot logs or node dowb logs based on date and nodeid:
+                 SELECT n.nodeid,n.nodelabel,f.name,e.eventtime,e.eventcreatetime,e.eventlogmsg FROM events e,node n,facilities f WHERE (e.eventuei like '%nodeRebootDetected' or e.eventuei like 
+                 			'NodeDown') and e.nodeid=289 and e.nodeid=n.nodeid and f.id=nfacility and CAST(e.eventtime as DATE ) = '2025-10-03' ORDER BY e.eventtime DESC;
+                 			
+                 			
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+1---> user will upload a file
+
+2--->we need to write a service where the data from uploaded file should be read line by line and first store in postgresql database in key- value pair format where key=first column and value will be a string storing the whole line ,the data in file will be like "1232,1234,5404,Dashville,1.2.2.2.2,DAV-NBSE,123-1,DAV-NBNE,123-5" IN THIS "1232" is tagID  
+
+3--->after storing in database next we need to fetch the data from daatabse and store it in redis databse in the format of key value pair where key will be the tagID and value will be a json storing tagid,position,stationName,nextTag
+
+(priority,position naming will be given later)
+
+4---> when user uploads a new file using the serivce api,then the data stored in postgresql databse should be truncated and the new data should be stored and then the new data stored in database should be stored in redis 
+
+5--->then this data from redis will be returned 
+
+

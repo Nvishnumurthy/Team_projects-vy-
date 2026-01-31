@@ -1,0 +1,27 @@
+{
+  "summary": {
+    "error": 4
+  },
+  "details": [
+    {
+      "message": "[2025-08-13 20:20:02] [OBC-5956] ERROR: OBC PDT: Yard Encoder Link Test Failed",
+      "template_id": "113",
+      "reason": "Yard Test Failed"
+    },
+    {
+      "message": "[2025-08-13 20:20:04] [OBC-5956] ERROR: OBC PDT: Yard Video check Failed",
+      "template_id": "115",
+      "reason": "Yard Video check Failed"
+    },
+    {
+      "message": "[2025-08-14 23:16:37] [OBC-5956] ERROR: OBC PDT: Yard Encoder Link Test Failed",
+      "template_id": "113",
+      "reason": "Yard Test Failed"
+    },
+    {
+      "message": "[2025-08-14 23:16:39] [OBC-5956] ERROR: OBC PDT: Yard Video check Failed",
+      "template_id": "115",
+      "reason": "Yard Video check Failed"
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+models/explanations.json (example)
+
+Create this file manually in models/ to map templates (or template IDs) to human-friendly reasons. The trainer does not auto-create reasons — you add or update this JSON to improve explanations.
+
+{
+  "None": "No template matched or not recognized",
+  "123": "Network failure or encoder unreachable - check network and encoder power",
+  "OBC change state (* -> *) direction= Moving towards *": "State transition - expected during route changes",
+  "Link Test Fail, EncoderIP *": "Link/Network failure - encoder unreachable or link flapping"
+}
+
+
+You can expand this mapping after you inspect templates produced by Drain3.
+
+------------------------------------------------------------------------------------------------------------------------------
+
+1. Install the venv package
+
+Since you’re on Ubuntu:
+
+sudo apt update
+sudo apt install python3.10-venv -y
+
+
+If your Python version is not 3.10, replace it with your version (e.g., python3.12-venv).
+
+2. Recreate the virtual environment
+
+From inside your log_ai project root:
+
+cd ~/log_ai
+python3 -m venv venv
+
+
+This will create a venv/ directory in your project.
+
+3. Activate the environment
+source venv/bin/activate
+
+
+Your shell prompt will now start with (venv).
+
+4. Install project dependencies
+
+Now install requirements:
+
+pip install --upgrade pip
+pip install -r requirements.txt
+
+If you still get an error specifically on drain3, just install it manually with:
+
+pip install git+https://github.com/IntelLabs/drain3.git
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+2. Place your training `.log` files in `train_logs/`.
+
+## Train (offline)
+cd log_ai/src
+python train.py
+
+css
+Copy code
+This builds Drain3 templates, trains a LightGBM classifier and saves models to `models/`.
+
+## Analyze a file (CLI)
+python src/infer.py /path/to/somefile.log
+
+produces /path/to/somefile.log.report.json
+graphql
+Copy code
+
+## Run REST API (for web app integration)
+cd log_ai
+uvicorn src.api:app --host 0.0.0.0 --port 8000
+
+css
+Copy code
+Then `POST` file to:
+POST http://localhost:8000/analyze
+form field: file (file upload)
+
+pgsql
+Copy code
+
+## Improve explanations
+Edit `models/explanations.json` to map template IDs or template text to human-readable reasons.
+
+## Notes
+- Everything runs offline — no external services required.
+- For better root-cause explanations, collect human-labeled pairs (template -> reason) and expand `explanations.json` or train a small classifier mapping template → reason categories.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
