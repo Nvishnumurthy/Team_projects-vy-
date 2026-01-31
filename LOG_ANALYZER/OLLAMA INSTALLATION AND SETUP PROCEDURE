@@ -1,0 +1,164 @@
+OLLAMA INSTALLATION AND SETUP PROCEDURE
+
+Before installing, ensure:
+
+You have curl, tar, sudo (or root) privileges.
+
+Sufficient disk space (models can be several GB).
+
+Enough RAM (8 GB minimum, more for larger models).
+
+(Optional) If you have an NVIDIA or AMD GPU, you might want to install GPU drivers / CUDA / ROCm to speed up inference.
+
+1. Install Ollama CLI
+
+Ollama provides an official install script for Linux. Use this command:
+
+curl -fsSL https://ollama.com/install.sh | sh
+
+
+This script automatically detects your architecture (x86_64, arm64) and installs the appropriate binary. 
+Ollama
++1
+
+It installs ollama into a bin path (e.g. /usr/local/bin/ollama) and unpacks supporting libraries. 
+Ollama
++1
+
+If you prefer manual install (or the script fails), you can:
+
+curl -fsSL https://ollama.com/download/ollama-linux-amd64.tgz | sudo tar -xzf - -C /usr
+
+
+And for AMD GPU support, also:
+
+curl -fsSL https://ollama.com/download/ollama-linux-amd64-rocm.tgz | sudo tar -xzf - -C /usr
+
+
+Finally, verify install:
+
+ollama --version
+
+
+If it prints version info, the CLI is installed. 
+docs.ollama.com
++2
+collabnix.com
++2
+
+2. (Optional) Configure as a system service
+
+You may want ollama to run as a background service automatically on boot (so your log_analyzer can always call it). Ollama docs suggest:
+
+Create a dedicated user & group (e.g. ollama)
+
+Create a systemd unit file /etc/systemd/system/ollama.service with contents like:
+
+[Unit]
+Description=Ollama Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/ollama serve
+User=ollama
+Group=ollama
+Restart=always
+RestartSec=3
+Environment="PATH=/usr/bin:/usr/local/bin"
+
+[Install]
+WantedBy=multi-user.target
+
+
+Then enable & start:
+
+sudo systemctl daemon-reload
+sudo systemctl enable ollama
+sudo systemctl start ollama
+
+
+Check status with:
+
+sudo systemctl status ollama
+journalctl -u ollama
+
+
+Ollama docs include this as recommended for Linux. 
+docs.ollama.com
+
+3. Pull / install a model via Ollama
+
+Once Ollama is installed, you can pull a model (say llama2):
+
+ollama pull llama2
+
+
+This downloads the model data to your local Ollama models directory. 
+It's FOSS
++2
+docs.ollama.com
++2
+
+To see installed models:
+
+ollama list
+
+
+To run the model in interactive mode:
+
+ollama run llama2
+
+
+Or to run with a prompt:
+
+ollama run llama2 --prompt "Hello, world!"
+
+
+Note: running a model may consume significant memory/CPU/GPU. 
+docs.ollama.com
++1
+
+4. Test via your Python “ollama_client” wrapper
+
+Your ollama_client.py function:
+
+def ask_ollama(model_name: str, prompt: str, timeout: int = 20):
+    # runs `ollama run <model_name> --prompt '<prompt>'`
+    ...
+
+
+Test manually:
+
+ollama run llama2 --prompt "What caused a power failure?"
+
+
+If it returns a response, your setup works. Then your Python wrapper should be able to call it via subprocess.
+
+5. (Optional) GPU / performance tuning
+
+If your system has an NVIDIA GPU:
+
+Install CUDA and NVIDIA drivers.
+
+Ensure the nvidia-smi command shows your GPU.
+
+Re-run the Ollama install or install the CUDA variant if provided. 
+docs.ollama.com
+
+For AMD GPUs:
+
+Use the ROCm variant as provided above. 
+docs.ollama.com
+
+These steps allow the model to run faster via GPU. If no GPU, it still works (just slower, CPU-only).
+
+6. Use Ollama in offline environment
+
+Once installed and model pulled, you do not need internet (unless pulling new models). Your log_analyzer can call ollama run locally. Make sure:
+
+The model is already downloaded via ollama pull.
+
+The ollama binary is in PATH (or your wrapper knows its path).
+
+If running as a service, ensure it's accessible (if your wrapper calls remote API, you might call ollama serve instead of run). But for simple usage, calling ollama run with prompt is enough.
+
