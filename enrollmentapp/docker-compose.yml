@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  mysql-container:
+    image: mysql:8.0
+    container_name: mysql-container
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: student_enrollment
+      MYSQL_USER: mokila
+      MYSQL_PASSWORD: Mokila1234#
+      MYSQL_ROOT_PASSWORD: root1234
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - spring-net
+
+  springboot-app:
+    image: vishnumurthy/enrollmentapp:proj1
+    container_name: enrollmentapp
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mysql-container
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container:3306/student_enrollment
+      - SPRING_DATASOURCE_USERNAME=mokila
+      - SPRING_DATASOURCE_PASSWORD=Mokila1234#
+    networks:
+      - spring-net
+
+volumes:
+  mysql_data:
+
+networks:
+  spring-net:
